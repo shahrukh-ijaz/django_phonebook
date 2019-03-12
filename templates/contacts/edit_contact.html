@@ -1,0 +1,25 @@
+{% extends 'contacts/base.html' %}
+{% block title %}
+    View
+{% endblock %}
+{% block content %}
+<div align="center">
+    <h2 style="color:red;">Edit Contact Detials</h2>
+</div>
+<div align="">
+<form action="/update_contact/" method="POST">
+                {% csrf_token %}
+    <label>First Name</label><br>
+    <input type="text" name="first_name" id="first_name" value="{{ contact.first_name }}" class="form-control"/><br>
+    <label>Last Name</label><br>
+    <input type="text" name="last_name" id="last_name" value="{{ contact.last_name }}" class="form-control"/><br>
+    <label>Date of birth</label><br>
+    <input type="date" name="dob" id="dob" value="{{ contact.dob }}" class="form-control"/><br>
+    <label>Note</label><br>
+    <input type="text" name="note" id="note" value="{{ contact.note }}" class="form-control"/><br>
+    <input type="hidden" name="contact_id" id="contact_id" value="{{ contact_id }}"/>
+    <input type="submit" class="btn btn-danger" value="Update"/>
+</form>
+</div>
+
+{% endblock %}

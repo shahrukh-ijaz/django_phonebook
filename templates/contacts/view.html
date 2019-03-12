@@ -1,0 +1,47 @@
+{% extends 'contacts/base.html' %}
+{% block title %}
+    View
+{% endblock %}
+{% block content %}
+<div align="center">
+<h2 style="color:red;">Contact Detials</h2>
+<table class="table table-bordered" >
+    <tbody>
+        <tr>
+            <th>First Name</th>
+            <td>{{ contact.first_name }}</td>
+        </tr>
+        <tr>
+            <th>Last Name</th>
+            <td>{{ contact.last_name }}</td>
+        </tr>
+        <tr>
+            <th>Date of Birth</th>
+            <td>{{ contact.dob }}</td>
+        </tr>
+        <tr>
+            <th>Note</th>
+            <td>{{ contact.note }}</td>
+        </tr>
+        <tr>
+            <th>Emails</th>
+            <td>
+                {% for email in emails %}
+                    <p>{{ email.email }}</p>
+                {% endfor %}
+            </td>
+        </tr>
+        <tr>
+            <th>Numbers</th>
+            <td>
+                {% for number in numbers %}
+                    <p>{{ number.number }}</p>
+                {% endfor %}
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+</div>
+
+{% endblock %}
