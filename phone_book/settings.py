@@ -77,13 +77,17 @@ WSGI_APPLICATION = 'phone_book.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'contacts_db',
-        'USER': 'shahrukh',
-        'PASSWORD': 'shahrukh31',
-        'HOST': 'localhost',
-        'PORT': '',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': 'contacts_db',
+    #     'USER': 'shahrukh',
+    #     'PASSWORD': 'shahrukh31',
+    #     'HOST': 'localhost',
+    #     'PORT': '',
+    # }
 }
 
 

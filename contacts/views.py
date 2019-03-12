@@ -2,7 +2,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotFound
 from django.http import HttpResponseRedirect
-from contacts.models import Users, Contact, Email, Number
+from contacts.models import Contact, Email, Number
+from django.contrib.auth.models import User
 
 
 def index(request):
@@ -23,7 +24,7 @@ def add_contact(request):
         dob = request.POST['dob']
 
         user_id = request.session['user_id']
-        user = Users.objects.get(id=user_id)
+        user = User.objects.get(id=user_id)
 
         contact = Contact(first_name=first_name, last_name=last_name, dob=dob, note=note, user_id=user)
         contact.save()
@@ -72,7 +73,7 @@ def delete(request, id):
 def authenticate_user(request):
     username = request.POST['username']
     password = request.POST['password']
-    user = Users.objects.get(username=username, password=password)
+    user = User.objects.get(username=username, password=password)
     request.session['username'] = username
     request.session['user_id'] = user.id
     if user is not None:
@@ -136,3 +137,28 @@ def update_contact(request):
         contact.note = note
         contact.save()
         return HttpResponseRedirect('/user_index/')
+
+
+def number_delete(request, id, contact_id):
+    number = Number.objects.get(id=id)
+    if number is not None:
+        number.delete()
+    return HttpResponseRedirect('/view/'+contact_id)
+
+
+def number_edit(request, id, contact_id):
+    number = Number.objects.get(id=id)
+    return render('')
+    return HttpResponseRedirect('/index/')
+
+
+def email_delete(request, id, contact_id):
+    email = Email.objects.get(id=id)
+    if email is not None:
+        email.delete()
+    return HttpResponseRedirect('/view/' + contact_id)
+
+
+def email_edit(request, id, contact_id):
+    email = Email.objects.get(id=id)
+    return render("contacts/email_edit.html", {'email': email, 'contact_id': contact_id})
