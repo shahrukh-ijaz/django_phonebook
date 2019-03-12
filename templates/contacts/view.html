@@ -24,18 +24,36 @@
             <td>{{ contact.note }}</td>
         </tr>
         <tr>
-            <th>Emails</th>
+            <th style="background-color:  #10586a; color:white;text-align: center;">Emails</th>
             <td>
                 {% for email in emails %}
-                    <p>{{ email.email }}</p>
+                <tr>
+                    <td>{{ email.email }}</td>
+                    <td>
+                        <div class="btn-group">
+                            <!--<a class="btn btn-info btn-sm" style="color:white;" href="/email_edit/{{email.id}}/{{contact.id}}">Edit</a>-->
+                            <a class="btn btn-danger btn-sm" style="color:white;" href="/email_delete/{{email.id}}/{{contact.id}}">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+
                 {% endfor %}
             </td>
         </tr>
         <tr>
-            <th>Numbers</th>
+            <th style="background-color:#10586a; color:white;text-align: center;">Numbers</th>
             <td>
                 {% for number in numbers %}
-                    <p>{{ number.number }}</p>
+                   <tr>
+                    <td>{{ number.number }}
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <!--<a class="btn btn-info btn-sm" style="color:white;" href="/number_edit/{{number.id}}/{{contact.id}}">Edit</a>-->
+                            <a class="btn btn-danger btn-sm" style="color:white;" href="/number_delete/{{number.id}}/{{contact.id}}">Delete</a>
+                        </div>
+                    </td>
+                </tr>
                 {% endfor %}
             </td>
         </tr>
