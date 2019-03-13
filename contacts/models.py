@@ -1,11 +1,5 @@
-from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
 from django.contrib.auth.models import User
-
-
-# class Users(User):
-#     username = models.CharField(max_length=20, default="")
-#     password = models.CharField(max_length=20, default="")
 
 
 class Contact(models.Model):

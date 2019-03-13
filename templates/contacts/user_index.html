@@ -4,7 +4,7 @@
 {% endblock %}
 {% block content %}
     <h2 align="center">User Panel</h2><hr/>
-    <h5 style="float:right;">You are currently login with <b style="color:red;">{{ request.session.username }}</b>&nbsp;&nbsp;&nbsp;<a class="btn btn-default" href="/logout/" style="color:white;background-color: red;">Logout</a></h5>
+
 
     <a class="btn btn-link" href="/insert/">+ Add Contact</a>
     <br/><b>Your Total Contacts Are </b>{{ contacts.count }}
@@ -34,7 +34,7 @@
                             <a href="/delete/{{ contact.id }}" class="btn-sm btn btn-danger">Delete</a>
                             <a href="/add_email/{{ contact.id }}" class="btn btn-info btn-sm">Add Email</a>
                             <a href="/add_number/{{ contact.id }}" class="btn btn-info btn-sm">Add Number</a>
-                            <a href="/view/{{ contact.id }}" class="btn btn-success btn-sm">View</a>
+                            <a href="/display_contact/{{ contact.id }}" class="btn btn-success btn-sm">View</a>
                         </div>
                     </td>
                 </tr>

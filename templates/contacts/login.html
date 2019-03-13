@@ -4,11 +4,11 @@
 {% endblock %}
 {% block content %}
     <h2 align="center">Login</h2><hr/>
-    <form method="POST" action="/authenticate_user/" >
-            {% csrf_token %}
-            <input type="text" required class="form-control" name="username" id="username" placeholder="Enter Username" /><br>
-            <input type="password" required class="form-control" id="password" name="password" placeholder="Enter Password"/><br>
-            <input type="submit"  class="btn btn-success" value="Login">
+    <h2>Login</h2>
+    <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Login</button>
     </form>
 
-{% endblock %}
+{% endblock %}  

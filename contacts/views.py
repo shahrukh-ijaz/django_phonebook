@@ -1,21 +1,26 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, HttpResponseNotFound
 from django.http import HttpResponseRedirect
 from contacts.models import Contact, Email, Number
 from django.contrib.auth.models import User
+from django.views.decorators.http import require_http_methods
+from django.contrib.auth.decorators import login_required
 
 
 def index(request):
-    return render(request, 'contacts/index.html')
+    return render(request, 'contacts/login.html')
 
 
+@login_required
 def insert(request):
-    return render(request, 'contacts/test.html')
+    return render(request, 'contacts/add_contact.html')
 
 
+@login_required
 def add_contact(request):
-    if request.method == "POST":
+
         email = request.POST['user_email']
         first_name = request.POST['first_name']
         last_name = request.POST['last_name']
@@ -36,8 +41,7 @@ def add_contact(request):
         number.save()
 
         return HttpResponseRedirect('/user_index/', {'message': 'Deleted Successfully!!'})
-    else:
-        return HttpResponse("You're looking at GET")
+
 
 
 def login(request):
@@ -45,9 +49,7 @@ def login(request):
 
 
 def logout(request):
-
-    del request.session['username']
-    del request.session['user_id']
+    logout(request)
     return HttpResponseRedirect('/')
 
 
@@ -71,23 +73,17 @@ def delete(request, id):
 
 
 def authenticate_user(request):
-    username = request.POST['username']
-    password = request.POST['password']
-    user = User.objects.get(username=username, password=password)
-    request.session['username'] = username
-    request.session['user_id'] = user.id
-    if user is not None:
-        contact = Contact.objects.filter(user_id=user.id)
+    user_str = str(request.user)
+    if request.user is not None:
         return HttpResponseRedirect('/user_index/')
     else:
-        return HttpResponseNotFound('<h1>not correct username/password</h1>')
+        return HttpResponse('%s is not logged in' % user_str)
 
-
+@login_required
 def user_index(request):
-    user_id = request.session['user_id']
-    if user_id is not None:
-        contact = Contact.objects.filter(user_id=user_id)
-        return render(request, 'contacts/user_index.html', {'contacts': contact})
+     user_str = str(request.user)
+     contact = Contact.objects.filter(id=request.user.id)
+     return render(request, 'contacts/user_index.html', {'contacts': contact})
 
 
 def add_email(request, id=None):
@@ -115,11 +111,11 @@ def add_number(request, id=None):
         return HttpResponseRedirect('/user_index/')
 
 
-def view(request, id=None):
+def display_contact(request, id=None):
     contact = Contact.objects.get(id=id)
     emails = Email.objects.filter(contact_id=contact)
     numbers = Number.objects.filter(contact_id=contact)
-    return render(request, 'contacts/view.html', {'contact': contact, 'emails': emails, 'numbers': numbers})
+    return render(request, 'contacts/view_contact.html', {'contact': contact, 'emails': emails, 'numbers': numbers})
 
 
 def update_contact(request):
