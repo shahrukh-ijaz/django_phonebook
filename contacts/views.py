@@ -9,26 +9,23 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 
 
-def index(request):
-    return render(request, 'contacts/login.html')
-
-
 @login_required
+@require_http_methods(["GET"])
 def insert(request):
     return render(request, 'contacts/add_contact.html')
 
 
 @login_required
+@require_http_methods(["POST"])
 def add_contact(request):
+        email = request.POST.get('user_email')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        note = request.POST.get('note')
+        contact_number = request.POST.get('contact_number')
+        dob = request.POST.get('dob')
 
-        email = request.POST['user_email']
-        first_name = request.POST['first_name']
-        last_name = request.POST['last_name']
-        note = request.POST['note']
-        contact_number = request.POST['contact_number']
-        dob = request.POST['dob']
-
-        user_id = request.session['user_id']
+        user_id = request.user.id
         user = User.objects.get(id=user_id)
 
         contact = Contact(first_name=first_name, last_name=last_name, dob=dob, note=note, user_id=user)
@@ -44,21 +41,15 @@ def add_contact(request):
 
 
 
-def login(request):
-    return render(request, 'contacts/login.html')
-
-
-def logout(request):
-    logout(request)
-    return HttpResponseRedirect('/')
-
-
+@login_required
 def edit(request, id):
     contact = Contact.objects.get(id=id)
     if contact is not None:
         return render(request, 'contacts/edit_contact.html', {'contact': contact, 'contact_id': id})
 
 
+@require_http_methods(["POST"])
+@login_required
 def delete(request, id):
     contact = Contact.objects.get(id=id)
     if contact is not None:
@@ -72,6 +63,7 @@ def delete(request, id):
     return HttpResponse("Not delete id issue while try delete")
 
 
+
 def authenticate_user(request):
     user_str = str(request.user)
     if request.user is not None:
@@ -79,36 +71,40 @@ def authenticate_user(request):
     else:
         return HttpResponse('%s is not logged in' % user_str)
 
+
 @login_required
 def user_index(request):
-     user_str = str(request.user)
-     contact = Contact.objects.filter(id=request.user.id)
-     return render(request, 'contacts/user_index.html', {'contacts': contact})
+        contact = Contact.objects.filter(user_id=request.user.id)
+        print(contact)
+        return render(request, 'contacts/user_index.html', {'contacts': contact})
 
 
+@login_required
+@require_http_methods(["GET", "POST"])
 def add_email(request, id=None):
-    if request.method == "GET":
-        return render(request, 'contacts/add_email.html', {'contact_id': id})
-    else:
-        email = request.POST['email']
-        id = request.POST['contact_id']
+        if request.method == "GET":
+                return render(request, 'contacts/add_email.html', {'contact_id': id})
+        else:
+                email = request.POST.get('email')
+                id = request.POST.get('contact_id')
 
-        contact = Contact.objects.get(id=id)
-        new_email = Email(email=email, contact_id=contact)
-        new_email.save()
-        return HttpResponseRedirect('/user_index/')
+                contact = Contact.objects.get(id=id)
+                new_email = Email(email=email, contact_id=contact)
+                new_email.save()
+                return HttpResponseRedirect('/user_index/')
 
-
+@login_required
+@require_http_methods(["GET"])
 def add_number(request, id=None):
-    if request.method == "GET":
-        return render(request, 'contacts/add_number.html', {'contact_id': id})
-    else:
-        number = request.POST['number']
-        id = request.POST['contact_id']
-        contact = Contact.objects.get(id=id)
-        new_number = Number(number=number, contact_id=contact)
-        new_number.save()
-        return HttpResponseRedirect('/user_index/')
+        if request.method == "GET":
+                return render(request, 'contacts/add_number.html', {'contact_id': id})
+        else:
+                number = request.POST.get('number')
+                id = request.POST.get('contact_id')
+                contact = Contact.objects.get(id=id)
+                new_number = Number(number=number, contact_id=contact)
+                new_number.save()
+                return HttpResponseRedirect('/user_index/')
 
 
 def display_contact(request, id=None):
@@ -118,12 +114,14 @@ def display_contact(request, id=None):
     return render(request, 'contacts/view_contact.html', {'contact': contact, 'emails': emails, 'numbers': numbers})
 
 
+@login_required
+@require_http_methods(["POST"])
 def update_contact(request):
-    id = request.POST['contact_id']
-    first_name = request.POST['first_name']
-    last_name = request.POST['last_name']
-    note = request.POST['note']
-    dob = request.POST['dob']
+    id = request.POST.get('contact_id')
+    first_name = request.POST.get('first_name')
+    last_name = request.POST.get('last_name')
+    note = request.POST.get('note')
+    dob = request.POST.get('dob')
 
     contact = Contact.objects.get(id=id)
     if contact is not None:
@@ -135,6 +133,7 @@ def update_contact(request):
         return HttpResponseRedirect('/user_index/')
 
 
+@login_required
 def number_delete(request, id, contact_id):
     number = Number.objects.get(id=id)
     if number is not None:
@@ -142,19 +141,9 @@ def number_delete(request, id, contact_id):
     return HttpResponseRedirect('/view/'+contact_id)
 
 
-def number_edit(request, id, contact_id):
-    number = Number.objects.get(id=id)
-    return render('')
-    return HttpResponseRedirect('/index/')
-
-
+@login_required
 def email_delete(request, id, contact_id):
     email = Email.objects.get(id=id)
     if email is not None:
         email.delete()
     return HttpResponseRedirect('/view/' + contact_id)
-
-
-def email_edit(request, id, contact_id):
-    email = Email.objects.get(id=id)
-    return render("contacts/email_edit.html", {'email': email, 'contact_id': contact_id})
