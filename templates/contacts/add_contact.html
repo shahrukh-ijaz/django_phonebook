@@ -5,17 +5,11 @@
 {% block content %}
     <h2 align="center">New Contact</h2><hr/>
     <form method="POST" action="/add_contact/" style="padding:10px;">
-            {% csrf_token %}
-
-            <input type="text" class="form-control" name="first_name" id="first_name" placeholder="Enter Contact Firstname.."/><br>
-        <input type="text" class="form-control" name="last_name" id="last_name" placeholder="Enter Contact Lastname.."/><br>
-            <input type="text" class="form-control" name="note" id="note" placeholder="Enter Contact Note.."/><br>
-            <input type="date" class="form-control" name="dob" id="dob" placeholder="Enter Contact Birthday.."/><br>
-            <input type="number" class="form-control contact_no" name="contact_number" id="contact_number" placeholder="Enter Contact Number.." style="margin-bottom:10px;"/><br>
-
-            <input type="email" class="form-control user_email" name="user_email" id="user_email" placeholder="Enter User Email" style="margin-bottom:10px;"/>
-
-            <input type="submit"  class="btn btn-success" style="float:right;" value="Submit">
-        </form>
+        {% csrf_token %}
+        <table class="table">
+            {{ form.as_table }}
+        </table>
+        <input type="submit"  class="btn btn-success"  value="Submit">
+    </form>
 
 {% endblock %}

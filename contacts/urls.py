@@ -7,7 +7,6 @@ from . import views
 
 urlpatterns = [
     url( r'^$',auth_views.LoginView.as_view(template_name="contacts/login.html"), name="login"),
-    path('insert/', views.insert, name='insert'),
     path('add_contact/', views.add_contact, name='add_contact'),
     path('user_index/', views.user_index, name='user_index'),
     re_path(r'^edit/(?P<id>\d+)/$', views.edit, name='edit'),

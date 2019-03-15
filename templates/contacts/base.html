@@ -11,9 +11,10 @@
         <h1>Contact Site</h1>
     </div>
 <hr/> 
+<div class="container">
    {% if request.user.id is not None%}
 <h5 style="float:right;">You are currently login with <b style="color:red;">{{ request.user.username }}</b>&nbsp;&nbsp;&nbsp;<a class="btn btn-default" href="{% url 'logout' %}" style="color:white;background-color: red;">Logout</a></h5>
-
+</div>
     {% endif %}
     <div class="container">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -24,5 +25,6 @@
         {% block content %}
         {% endblock %}
     </div>
+
 </body>
 </html>
