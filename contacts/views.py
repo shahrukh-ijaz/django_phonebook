@@ -43,15 +43,15 @@ def add_contact(request):
         return HttpResponseRedirect('/user_index/')
 
 
-
+@require_http_methods(["GET"])
 @login_required
 def edit(request, id):
     contact = Contact.objects.get(id=id)
     if contact is not None:
-        return render(request, 'contact s/edit_contact.html', {'contact': contact, 'contact_id': id})
+        return render(request, 'contacts/edit_contact.html', {'contact': contact, 'contact_id': id})
 
 
-@require_http_methods(["POST"])
+@require_http_methods(["GET"])
 @login_required
 def delete(request, id):
     contact = Contact.objects.get(id=id)
@@ -64,7 +64,6 @@ def delete(request, id):
             contact.delete()
             return HttpResponseRedirect('/user_index/')
     return HttpResponse("Not delete id issue while try delete")
-
 
 
 def authenticate_user(request):
@@ -96,7 +95,7 @@ def add_email(request, id=None):
         return HttpResponseRedirect('/user_index/')
 
 @login_required
-@require_http_methods(["GET"])
+@require_http_methods(["GET", "POST"])
 def add_number(request, id=None):
     if request.method == "GET":
             return render(request, 'contacts/add_number.html', {'contact_id': id})
@@ -140,7 +139,7 @@ def number_delete(request, id, contact_id):
     number = Number.objects.get(id=id)
     if number is not None:
         number.delete()
-    return HttpResponseRedirect('/view/'+contact_id)
+    return HttpResponseRedirect('/display_contact/'+contact_id)
 
 
 @login_required
@@ -148,4 +147,5 @@ def email_delete(request, id, contact_id):
     email = Email.objects.get(id=id)
     if email is not None:
         email.delete()
-    return HttpResponseRedirect('/view/' + contact_id)
+    return HttpResponseRedirect('/display_contact/' + contact_id)
+
