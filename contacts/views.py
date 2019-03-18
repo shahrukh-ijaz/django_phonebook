@@ -1,11 +1,11 @@
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, render_to_response
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, HttpResponseNotFound
 from django.http import HttpResponseRedirect
 
-from contacts.forms import NewContactForm
+from contacts.forms import AddContactForm
 from contacts.models import Contact, Email, Number
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_http_methods
@@ -16,18 +16,36 @@ from django.contrib.auth.decorators import login_required
 @require_http_methods(["POST", "GET"])
 def add_contact(request):
     if request.method == "GET":
-        form = NewContactForm()
+        form = AddContactForm()
         return render(request, 'contacts/add_contact.html', {'form': form})
     else:
-        form = NewContactForm(request.POST)
+        form = AddContactForm(request.POST)
         if not form.is_valid():
-            return HttpResponse("Form Errors {}". format(form.errors))
+            return render_to_response('contacts/add_contact.html', {'form': form})
+
         email = form.cleaned_data.get('user_email')
         first_name = form.cleaned_data.get('first_name')
         last_name = form.cleaned_data.get('last_name')
         note = form.cleaned_data.get('note')
         contact_number = form.cleaned_data.get('contact_number')
         dob = form.cleaned_data.get('dob')
+
+        errors = list()
+
+        if len(first_name) < 4:
+            errors.append("Firstname is too short")
+
+        if len(last_name) < 4:
+            errors.append("Lastname is too short")
+
+        if len(note) < 4:
+            errors.append("note is too short")
+
+        if len(contact_number) < 11:
+            errors.append("contact_number is too short")
+
+        if len(errors) > 0:
+            return render_to_response('contacts/add_contact.html', {'form': form, 'errors': errors})
 
         user_id = request.user.id
         user = User.objects.get(id=user_id)

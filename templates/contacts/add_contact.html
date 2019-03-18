@@ -3,6 +3,16 @@
     Index
 {% endblock %}
 {% block content %}
+
+{%if errors %}
+    {%for error in errors %}
+        <div class="alert alert-danger">
+          <strong>Error # {{forloop.counter}}</strong> {{error}}
+        </div>
+        <br>
+
+    {% endfor %}
+{% endif %}
     <h2 align="center">New Contact</h2><hr/>
     <form method="POST" action="/add_contact/" style="padding:10px;">
         {% csrf_token %}

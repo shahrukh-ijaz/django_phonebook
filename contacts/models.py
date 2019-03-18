@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 class Contact(models.Model):
     first_name = models.CharField(max_length=30, default="")
     last_name = models.CharField(max_length=30, default="")
-    note = models.CharField(max_length=30, default="")
+    note = models.TextField(max_length=300, default="")
     dob = models.DateField()
 
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
