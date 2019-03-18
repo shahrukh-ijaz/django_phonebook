@@ -12,6 +12,7 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 
 
+
 @login_required
 @require_http_methods(["POST", "GET"])
 def add_contact(request):
@@ -45,7 +46,7 @@ def add_contact(request):
             errors.append("contact_number is too short")
 
         if len(errors) > 0:
-            return render_to_response('contacts/add_contact.html', {'form': form, 'errors': errors})
+            return render(request, 'contacts/add_contact.html', {'form': form, 'errors': errors})
 
         user_id = request.user.id
         user = User.objects.get(id=user_id)
