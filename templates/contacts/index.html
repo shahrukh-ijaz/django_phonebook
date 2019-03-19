@@ -1,0 +1,49 @@
+{% extends 'contacts/base.html' %}
+{% block title %}
+    Index
+{% endblock %}
+{% block content %}
+
+    <div>
+        <h2>Your Contacts</h2>
+    </div>
+{#    <button type="button" class="btn btn-link btn-lg" data-toggle="modal" data-target="#add_contact_modal">Add + </button>#}
+    <a href="/insert" class="btn btn-link btn-lg" >Add + </a>
+    <table class="table" id="table_contact">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Number</th>
+                <th>Birthday</th>
+                <th>Note</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>Shahrukh</td>
+                <td>shahrukh.ijaz@arbisoft.com</td>
+                <td>03209503962</td>
+                <td>31-05-1997</td>
+                <td>Friend</td>
+                <td>
+                     <div class="btn-group">
+                        <button type="button" class="btn btn-primary">Edit</button>
+                        <button type="button" class="btn btn-danger">Delete</button>
+                     </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+<script>
+$(document).ready(function() {
+            $('#table_contact').DataTable();
+        } );
+</script>
+
+
+{% endblock %}

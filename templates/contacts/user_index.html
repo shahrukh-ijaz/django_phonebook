@@ -1,0 +1,52 @@
+{% extends 'contacts/base.html' %}
+{% block title %}
+    Login
+{% endblock %}
+{% block content %}
+    <h2 align="center">User Panel</h2><hr/>
+
+
+    <a class="btn btn-link" href="/add_contact/">+ Add Contact</a>
+    <br/><b>Your Total Contacts Are </b>{{ contacts.count }}
+    {% if contacts.count > 0 %}
+    <table class="display" id="table_contacts" style="text-align: center;">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Firstname</th>
+                <th>Lastname</th>
+                <th>Note</th>
+                <th>DOB</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+        <tbody>
+            {% for contact in contacts %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ contact.first_name }}</td>
+                    <td>{{ contact.last_name }}</td>
+                    <td>{{ contact.note }}</td>
+                    <td>{{ contact.dob }}</td>
+                    <td>
+                        <div class="btn-group">
+                            <a href="/edit/{{ contact.id }}" class="btn-sm btn btn-info">Edit</a>
+                            <a href="/delete/{{ contact.id }}" class="btn-sm btn btn-danger">Delete</a>
+                            <a href="/add_email/{{ contact.id }}" class="btn btn-info btn-sm">Add Email</a>
+                            <a href="/add_number/{{ contact.id }}" class="btn btn-info btn-sm">Add Number</a>
+                            <a href="/display_contact/{{ contact.id }}" class="btn btn-success btn-sm">View</a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <h5>Currently You have no contact</h5>
+    {% endif %}
+    <script>
+    $(document).ready(function() {
+        $('#table_contacts').DataTable();
+    });
+</script>
+{% endblock %}
