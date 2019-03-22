@@ -170,6 +170,7 @@ def email_delete(request, id, contact_id):
     return HttpResponseRedirect('/display_contact/' + contact_id)
 
 
+@require_http_methods(["POST", "GET"])
 def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
