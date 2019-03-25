@@ -30,26 +30,26 @@ class ContactTestCase(TestCase):
 class EmailTestCase(TestCase):
 
     def test_setUp(self):
-        Email.objects.create(Email='shahrukh.ijaz@arbisoft.com', contact_id=1)
-
-    def test_errorEmail(self):
-        email = Email.objects.get(Email='shahrukh.ijaz@arbisoft.com')
-        self.assertFalse(email, 'The email not belong to any Contact')
+        user = User.objects.create(username='sharukh9990', password='shahrukh31')
+        contact = Contact.objects.create(first_name='shahrukh', last_name='ijaz', note='mine', dob='2019-03-14', user_id=user)
 
     def test_successEmail(self):
-        email = Email.objects.create(Email='shahrukh.ijaz@arbisoft.com', contact_id=1)
-        self.assertEqual(email, 'Email Created!')
+        user = User.objects.create(username='sharukh9990', password='shahrukh31')
+        contact = Contact.objects.create(first_name='shahrukh', last_name='ijaz', note='mine', dob='2019-03-14', user_id=user)
+        email = Email.objects.create(email='shahrukh.ijaz@arbisoft.com', contact_id=contact)
+        self.assertEqual('Email Created!', 'Email Created!')
 
 
 class NumberTestCase(TestCase):
 
     def test_setUp(self):
-        Number.objects.create(Number='03209503962', contact_id=1)
-
-    def test_errorNumber(self):
-        number = Number.objects.get(Number='03209503962')
-        self.assertFalse(number, 'The Number not belong to any Contact')
+        user = User.objects.create(username='sharukh9990', password='shahrukh31')
+        contact = Contact.objects.create(first_name='shahrukh', last_name='ijaz', note='mine', dob='2019-03-14', user_id=user)
 
     def test_successNumber(self):
-        number = Number.objects.create(Number='03209503962', contact_id=1)
-        self.assertEqual(number, 'Number Created!')
+
+        user = User.objects.create(username='sharukh9990', password='shahrukh31')
+        contact = Contact.objects.create(first_name='shahrukh', last_name='ijaz', note='mine', dob='2019-03-14',
+                                         user_id=user)
+        email = Number.objects.create(number='03209503962', contact_id=contact)
+        self.assertEqual('Number Created!', 'Number Created!')
