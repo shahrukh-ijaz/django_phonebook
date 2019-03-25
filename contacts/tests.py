@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 
 class ContactTestCase(TestCase):
 
-    def test_setUp(self):
+    def setUp(self):
         user = User.objects.create(username='sharukh9990', password='shahrukh31')
         Contact.objects.create(first_name='shahrukh', last_name='ijaz', note='mine',  dob='2019-03-14', user_id=user)
 
@@ -27,7 +27,7 @@ class ContactTestCase(TestCase):
 
 class EmailTestCase(TestCase):
 
-    def test_setUp(self):
+    def setUp(self):
         user = User.objects.create(username='sharukh9990', password='shahrukh31')
         contact = Contact.objects.create(first_name='shahrukh', last_name='ijaz', note='mine', dob='2019-03-14', user_id=user)
 
@@ -40,7 +40,7 @@ class EmailTestCase(TestCase):
 
 class NumberTestCase(TestCase):
 
-    def test_setUp(self):
+    def setUp(self):
         user = User.objects.create(username='sharukh9990', password='shahrukh31')
         contact = Contact.objects.create(first_name='shahrukh', last_name='ijaz', note='mine', dob='2019-03-14', user_id=user)
 
