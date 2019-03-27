@@ -14,7 +14,7 @@ class ContactTestCase(TestCase):
             self.assertFalse(users, 'The contact have contacts not able to delete!')
 
     def test_valid_form(self):
-        form = AddContactForm(data={'email': "user@mp.com", 'password': "user", 'first_name': "shahrukh",
+        form = AddContactForm(data={'user_email': "user@mp.com", 'password': "user", 'first_name': "shahrukh",
                                     'last_name': "ijaz", 'contact_number': '03209503962', 'note': 'mine',
                                     'dob': '2019-03-14'})
         self.assertTrue(form.is_valid())
