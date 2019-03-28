@@ -11,7 +11,8 @@ from contacts.models import Contact, Email, Number
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 @login_required
@@ -179,6 +180,14 @@ def signup(request):
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
+
+            subject = 'Thank you for registering to our site'
+            message = 'It  means a world to us '
+            email_from = settings.EMAIL_HOST_USER
+            recipient_list = [request.POST.get('email'), ]
+
+            send_mail(subject, message, email_from, recipient_list)
+
             login(request, user)
             return HttpResponseRedirect('/user_index/')
     else:
