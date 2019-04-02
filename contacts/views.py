@@ -1,10 +1,7 @@
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.exceptions import ValidationError
-from django.shortcuts import render, get_object_or_404, render_to_response
-from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponse, HttpResponseNotFound
+from django.shortcuts import render, render_to_response
+from django.contrib.auth import  login
+from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_text
@@ -15,10 +12,8 @@ from contacts.models import Contact, Email, Number
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail
-from django.conf import settings
-from django.core.mail import EmailMessage
-from contacts.tokens import account_activation_token
+from contacts.tasks import send
+from contacts.tokens import TokenGenerator
 
 
 @login_required
@@ -187,6 +182,7 @@ def signup(request):
             user.save()
             current_site = get_current_site(request)
             mail_subject = 'Activate your account.'
+            account_activation_token = TokenGenerator()
             message = render_to_string('contacts/acc_active_email.html', {
                 'user': user,
                 'domain': current_site.domain,
@@ -194,10 +190,7 @@ def signup(request):
                 'token': account_activation_token.make_token(user),
             })
             to_email = request.POST.get('email')
-            email = EmailMessage(
-                mail_subject, message, to=[to_email]
-            )
-            email.send()
+            send.delay(mail_subject, to_email, message)
             return HttpResponse('Please confirm your email address to complete the registration')
     else:
         form = SignUpForm()
@@ -205,6 +198,7 @@ def signup(request):
 
 
 def activate(request, uidb64, token):
+    account_activation_token = TokenGenerator()
     try:
         uid = force_text(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
