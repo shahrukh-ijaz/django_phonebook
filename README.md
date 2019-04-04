@@ -19,7 +19,7 @@ Say what the step will be
 
 ```
 	In terminal run this command : `. 	setup.sh`
-	After that run  `redis-5.0.3/src/redis-server`
+	After that run  `redis-5.0.4/src/redis-server`
 	open a new terminal 
 	 Enter `python manage.py runserver`
 ```
@@ -28,7 +28,9 @@ End with an example of getting some data out of the system or using it for a lit
 ## Running worker
 
 ```
-celery -A proj worker -l info
+open a terminal, activate the virtual env and then run the below command:
+
+celery -A phone_book worker -l info
 ```
 
 ## Running the tests

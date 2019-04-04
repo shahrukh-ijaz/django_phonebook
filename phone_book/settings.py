@@ -11,16 +11,20 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import json
 import djcelery
 
-# CELERY STUFF
-BROKER_URL = 'redis://localhost:6379'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379'
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'Africa/Nairobi'
 
+with open('celery_settings.json', 'r') as f:
+    celery_settings = json.load(f)
+
+# CELERY STUFF
+BROKER_URL = celery_settings[0]['BROKER_URL']
+CELERY_RESULT_BACKEND = celery_settings[0]['CELERY_RESULT_BACKEND']
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = celery_settings[0]['CELERY_TASK_SERIALIZER']
+CELERY_RESULT_SERIALIZER = celery_settings[0]['CELERY_RESULT_SERIALIZER']
+CELERY_TIMEZONE = celery_settings[0]['CELERY_TIMEZONE']
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)

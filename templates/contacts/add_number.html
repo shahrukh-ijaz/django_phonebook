@@ -4,7 +4,7 @@
 {% endblock %}
 {% block content %}
     <h2 align="center">Login</h2><hr/>
-    <form method="POST" action="/add_number/" >
+    <form method="POST" action="/create_number/" >
             {% csrf_token %}
             <input type="hidden" name="contact_id" id="contact_id" value="{{ contact_id }}"/>
             <input type="number" required class="form-control" name="number" id="number" placeholder="Enter number You want to add" /><br>

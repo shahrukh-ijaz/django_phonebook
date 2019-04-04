@@ -9,7 +9,9 @@ from . import views
 urlpatterns = [
     url(r'^$', auth_views.LoginView.as_view(template_name="contacts/login.html"), name="login"),
     url(r'^signup/$', views.signup, name='signup'),
+    url(r'^create_user/$', views.create_user, name='create_user'),
     path('add_contact/', views.add_contact, name='add_contact'),
+    path('create_account/', views.create_account, name='create_account'),
     path('user_index/', views.user_index, name='user_index'),
     re_path(r'^edit/(?P<id>\d+)/$', views.edit, name='edit'),
     re_path(r'^delete/(?P<id>\d+)/$', views.delete, name='delete'),
@@ -22,7 +24,9 @@ urlpatterns = [
 
     path('logout/', include('django.contrib.auth.urls'), name="logout"),
     path('add_email/', views.add_email, name='add_email'),
+    path('create_email/', views.create_email, name='create_email'),
     path('add_number/', views.add_number, name='add_number'),
+    path('create_number/', views.create_number, name='create_number'),
     path('authenticate_user/', views.authenticate_user, name='authenticate_user'),
     path('update_contact/', views.update_contact, name='update_contact'),
 
