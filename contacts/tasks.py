@@ -12,6 +12,6 @@ def send(mail_subject, to_email, message):
         mail_subject, message, to=[to_email]
     )
     email.send()
-    return "Email Has been sent from Task of sending email"
+    return "Email Sent to ---> {}".format(to_email)
 
 
