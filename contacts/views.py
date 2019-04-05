@@ -25,7 +25,7 @@ def add_contact(request):
 
 @login_required
 @require_http_methods(["POST"])
-def create_account(request):
+def create_contact(request):
     form = AddContactForm(request.POST)
     if not form.is_valid():
         return render_to_response('contacts/add_contact.html', {'form': form})
