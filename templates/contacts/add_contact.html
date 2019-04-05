@@ -14,7 +14,7 @@
     {% endfor %}
 {% endif %}
     <h2 align="center">New Contact</h2><hr/>
-    <form method="POST" action="/add_contact/" style="padding:10px;">
+    <form method="POST" action="/create_contact/" style="padding:10px;">
         {% csrf_token %}
         <table class="table">
             {{ form.as_table }}

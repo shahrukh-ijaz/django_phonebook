@@ -11,6 +11,21 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import json
+import djcelery
+
+
+with open('celery_settings.json', 'r') as f:
+    celery_settings = json.load(f)
+
+# CELERY STUFF
+BROKER_URL = celery_settings[0]['BROKER_URL']
+CELERY_RESULT_BACKEND = celery_settings[0]['CELERY_RESULT_BACKEND']
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = celery_settings[0]['CELERY_TASK_SERIALIZER']
+CELERY_RESULT_SERIALIZER = celery_settings[0]['CELERY_RESULT_SERIALIZER']
+CELERY_TIMEZONE = celery_settings[0]['CELERY_TIMEZONE']
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -38,7 +53,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'contacts',
+    'djcelery',
+    'django_celery_results',
 ]
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_BACKEND = 'django-cache'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -121,3 +140,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+if DEBUG:
+    EMAIL_HOST = 'smtp.mailtrap.io'
+    EMAIL_HOST_USER = '9ce6c7506ca3e6'
+    EMAIL_HOST_PASSWORD = '8ffbe07823806e'
+    EMAIL_PORT = '2525'

@@ -1,66 +1,71 @@
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
-from django.core.exceptions import ValidationError
-from django.shortcuts import render, get_object_or_404, render_to_response
-from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponse, HttpResponseNotFound
+from django.contrib.sites.shortcuts import get_current_site
+from django.shortcuts import render, render_to_response
+from django.contrib.auth import login
+from django.http import HttpResponse
 from django.http import HttpResponseRedirect
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes, force_text
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 
 from contacts.forms import AddContactForm, SignUpForm
 from contacts.models import Contact, Email, Number
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-
+from contacts.tasks import send
+from contacts.tokens import TokenGenerator
 
 
 @login_required
-@require_http_methods(["POST", "GET"])
+@require_http_methods(["GET"])
 def add_contact(request):
-    if request.method == "GET":
-        form = AddContactForm()
-        return render(request, 'contacts/add_contact.html', {'form': form})
-    else:
-        form = AddContactForm(request.POST)
-        if not form.is_valid():
-            return render_to_response('contacts/add_contact.html', {'form': form})
+    form = AddContactForm()
+    return render(request, 'contacts/add_contact.html', {'form': form})
 
-        email = form.cleaned_data.get('user_email')
-        first_name = form.cleaned_data.get('first_name')
-        last_name = form.cleaned_data.get('last_name')
-        note = form.cleaned_data.get('note')
-        contact_number = form.cleaned_data.get('contact_number')
-        dob = form.cleaned_data.get('dob')
 
-        errors = list()
+@login_required
+@require_http_methods(["POST"])
+def create_contact(request):
+    form = AddContactForm(request.POST)
+    if not form.is_valid():
+        return render_to_response('contacts/add_contact.html', {'form': form})
 
-        if len(first_name) < 4:
-            errors.append("Firstname is too short")
+    email = form.cleaned_data.get('user_email')
+    first_name = form.cleaned_data.get('first_name')
+    last_name = form.cleaned_data.get('last_name')
+    note = form.cleaned_data.get('note')
+    contact_number = form.cleaned_data.get('contact_number')
+    dob = form.cleaned_data.get('dob')
 
-        if len(last_name) < 4:
-            errors.append("Lastname is too short")
+    errors = list()
 
-        if len(note) < 4:
-            errors.append("note is too short")
+    if len(first_name) < 4:
+        errors.append("Firstname is too short")
 
-        if len(contact_number) < 11:
-            errors.append("contact_number is too short")
+    if len(last_name) < 4:
+        errors.append("Lastname is too short")
 
-        if len(errors) > 0:
-            return render(request, 'contacts/add_contact.html', {'form': form, 'errors': errors})
+    if len(note) < 4:
+        errors.append("note is too short")
 
-        user_id = request.user.id
-        user = User.objects.get(id=user_id)
-        contact = Contact(first_name=first_name, last_name=last_name, dob=dob, note=note, user_id=user)
-        contact.save()
+    if len(contact_number) < 11:
+        errors.append("contact_number is too short")
 
-        email = Email(email=email, contact_id=contact)
-        email.save()
+    if len(errors) > 0:
+        return render(request, 'contacts/add_contact.html', {'form': form, 'errors': errors})
 
-        number = Number(number=contact_number, contact_id=contact)
-        number.save()
+    user_id = request.user.id
+    user = User.objects.get(id=user_id)
+    contact = Contact(first_name=first_name, last_name=last_name, dob=dob, note=note, user_id=user)
+    contact.save()
 
-        return HttpResponseRedirect('/user_index/')
+    email = Email(email=email, contact_id=contact)
+    email.save()
+
+    number = Number(number=contact_number, contact_id=contact)
+    number.save()
+
+    return HttpResponseRedirect('/user_index/')
 
 
 @require_http_methods(["GET"])
@@ -101,31 +106,40 @@ def user_index(request):
 
 
 @login_required
-@require_http_methods(["GET", "POST"])
+@require_http_methods(["GET"])
 def add_email(request, id=None):
-    if request.method == "GET":
-        return render(request, 'contacts/add_email.html', {'contact_id': id})
-    else:
-        email = request.POST.get('email')
-        id = request.POST.get('contact_id')
+    return render(request, 'contacts/add_email.html', {'contact_id': id})
 
-        contact = Contact.objects.get(id=id)
-        new_email = Email(email=email, contact_id=contact)
-        new_email.save()
-        return HttpResponseRedirect('/user_index/')
 
 @login_required
-@require_http_methods(["GET", "POST"])
+@require_http_methods(["POST"])
+def create_email(request, id=None):
+
+    email = request.POST.get('email')
+    id = request.POST.get('contact_id')
+
+    contact = Contact.objects.get(id=id)
+    new_email = Email(email=email, contact_id=contact)
+    new_email.save()
+    return HttpResponseRedirect('/user_index/')
+
+
+@login_required
+@require_http_methods(["GET"])
 def add_number(request, id=None):
-    if request.method == "GET":
-            return render(request, 'contacts/add_number.html', {'contact_id': id})
-    else:
-        number = request.POST.get('number')
-        id = request.POST.get('contact_id')
-        contact = Contact.objects.get(id=id)
-        new_number = Number(number=number, contact_id=contact)
-        new_number.save()
-        return HttpResponseRedirect('/user_index/')
+    return render(request, 'contacts/add_number.html', {'contact_id': id})
+
+
+@login_required
+@require_http_methods(["POST"])
+def create_number(request, id=None):
+
+    number = request.POST.get('number')
+    id = request.POST.get('contact_id')
+    contact = Contact.objects.get(id=id)
+    new_number = Number(number=number, contact_id=contact)
+    new_number.save()
+    return HttpResponseRedirect('/user_index/')
 
 
 def display_contact(request, id=None):
@@ -170,17 +184,47 @@ def email_delete(request, id, contact_id):
     return HttpResponseRedirect('/display_contact/' + contact_id)
 
 
-@require_http_methods(["POST", "GET"])
+@require_http_methods(["GET"])
 def signup(request):
-    if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
-            raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=raw_password)
-            login(request, user)
-            return HttpResponseRedirect('/user_index/')
-    else:
-        form = SignUpForm()
+    form = SignUpForm()
     return render(request, 'contacts/signup.html', {'form': form})
+
+
+@require_http_methods(["POST"])
+def create_user(request):
+    form = SignUpForm(request.POST)
+    if form.is_valid():
+        user = form.save(commit=False)
+        user.is_active = False
+        user.save()
+        current_site = get_current_site(request)
+        mail_subject = 'Activate your account.'
+        account_activation_token = TokenGenerator()
+        message = render_to_string('contacts/acc_active_email.html', {
+            'user': user,
+            'domain': current_site.domain,
+            'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+            'token': account_activation_token.make_token(user),
+        })
+        to_email = request.POST.get('email')
+        send.delay(mail_subject, to_email, message)
+        return HttpResponse('Please confirm your email address to complete the registration')
+    else:
+        return render(request, 'contacts/signup.html', {'form': form})
+
+
+def activate(request, uidb64, token):
+    account_activation_token = TokenGenerator()
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        login(request, user)
+        return HttpResponse('Thank you for your email confirmation. Now you can login your account.'
+                            '<br><a href="/user_index" class="btn btn-success">Back</a>')
+    else:
+        return HttpResponse('Activation link is invalid!')
