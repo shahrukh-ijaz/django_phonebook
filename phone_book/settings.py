@@ -55,9 +55,22 @@ INSTALLED_APPS = [
     'contacts',
     'djcelery',
     'django_celery_results',
+    'rest_framework',
+    'rest_framework.authtoken'
 ]
+
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_RESULT_BACKEND = 'django-cache'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated', )
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
