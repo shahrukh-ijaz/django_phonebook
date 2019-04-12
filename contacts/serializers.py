@@ -15,10 +15,9 @@ class NumberSerializer(serializers.ModelSerializer):
 
 
 class ContactSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Contact
-        fields = ('first_name', 'last_name', 'note', 'dob')
+        fields = ('id', 'first_name', 'last_name', 'note', 'dob', 'user_id')
 
 
 class ContactDetailSerializer(serializers.ModelSerializer):
@@ -27,7 +26,7 @@ class ContactDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Contact
-        fields = ('first_name', 'last_name', 'note', 'dob', 'emails', 'numbers')
+        fields = ('id', 'first_name', 'last_name', 'note', 'dob', 'emails', 'numbers')
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -38,8 +37,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
-    contacts = ContactSerializer(many=True, required=False)
+    # contacts = ContactSerializer(many=True, required=False)
 
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'username', 'email', 'contacts')
+        fields = ('id', 'first_name', 'last_name', 'username', 'email')
