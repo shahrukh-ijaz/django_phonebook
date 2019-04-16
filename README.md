@@ -39,6 +39,44 @@ You can run the test by using just a command
 
 `./manage.py test`<br>
 
+
+## REST API
+```python\
+# Login [POST]
+http://127.0.0.1:8001/api/login?username=shahrukh-ijaz&password=shahrukh31
+# profile [GET]
+http://127.0.0.1:8001/api/profile
+# profile [PUT]
+http://127.0.0.1:8001/api/profile
+# logout [GET]
+http://127.0.0.1:8001/api/logout
+# Contacts [GET]
+http://127.0.0.1:8001/api/contacts
+# Contacts [POST]
+http://127.0.0.1:8001/api/contacts
+parameter {
+        "id": 21,
+        "first_name": "222222",
+        "last_name": "2",
+        "note": "2",
+        "dob": "2018-03-12",
+        "user_id": 91
+    }
+# Contacts [PUT]
+http://127.0.0.1:8001/api/contacts
+parameter{
+        "id": 21,
+        "first_name": "222222",
+        "last_name": "2",
+        "note": "2",
+        "dob": "2018-03-12",
+        "user_id": 91
+    }
+
+```
+[/api/login](https://choosealicense.com/licenses/mit/) 
+
+
 ## Authors
 
 * **Shahrukh Ijaz** - *Initial work* - [SHAHRUKH IJAZ](https://github.com/shahrukh-ijaz)
