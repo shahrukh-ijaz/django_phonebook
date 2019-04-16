@@ -37,7 +37,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
-    # contacts = ContactSerializer(many=True, required=False)
 
     class Meta:
         model = User

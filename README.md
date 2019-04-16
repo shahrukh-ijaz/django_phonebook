@@ -43,7 +43,12 @@ You can run the test by using just a command
 ## REST API
 ```python\
 # Login [POST]
-http://127.0.0.1:8001/api/login?username=shahrukh-ijaz&password=shahrukh31
+http://127.0.0.1:8001/api/login
+data type = form-data 
+{
+"username": , 
+"password":
+}
 # profile [GET]
 http://127.0.0.1:8001/api/profile
 # profile [PUT]
