@@ -37,7 +37,8 @@ celery -A phone_book worker -l info
 
 You can run the test by using just a command 
 
-`./manage.py test`<br>
+`./manage.py test --pattern="*_test.py"
+`<br>
 
 
 ## REST API
