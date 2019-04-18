@@ -53,6 +53,13 @@ data type = form-data
 http://127.0.0.1:8001/api/profile
 # profile [PUT]
 http://127.0.0.1:8001/api/profile
+updated parameter = {
+    "id": 91,
+    "first_name": "shery1",
+    "last_name": "ijaz",
+    "username": "shahrukh-ijaz",
+    "email": "shahrukh.ijaz@arbisoft.com"
+}
 # logout [GET]
 http://127.0.0.1:8001/api/logout
 # Contacts [GET]

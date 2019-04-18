@@ -64,13 +64,12 @@ CELERY_RESULT_BACKEND = 'django-cache'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
+            'rest_framework.authentication.TokenAuthentication',
     ),
-
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated', )
 }
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

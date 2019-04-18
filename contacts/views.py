@@ -6,24 +6,13 @@ from django.http import HttpResponseRedirect
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-# from requests import Response
-from rest_framework import permissions
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
 from contacts.forms import AddContactForm, SignUpForm
 from contacts.models import Contact, Email, Number
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-
-from contacts.serializers import UserSerializer
 from contacts.tasks import send
 from contacts.tokens import TokenGenerator
-
-from rest_framework import permissions, status
-from rest_framework.response import Response
-from rest_framework.views import APIView
 
 
 @login_required
