@@ -1,7 +1,7 @@
 from tokenize import Token
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework import permissions, status
+from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
@@ -13,114 +13,85 @@ from rest_framework.status import (
 )
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from contacts.serializers import UserSerializer, ContactSerializer, UserDetailSerializer
+
+from contacts.decorators import validate_token
+from contacts.serializers import UserSerializer, ContactSerializer
 from contacts.models import User, Contact
 from django.contrib.auth import authenticate
 from contacts.permissions import IsUserLogin
 
 
-def validate_token(request):
-    try:
-        if 'token' in request.COOKIES:
-            token = Token.objects.get(key=request.COOKIES['token'])
-            return token
-        else:
-            return None
-    except Token.DoesNotExist:
-        return None
-
-
 class UserProfile(APIView):
+    """This APIView os for the content of UserProfile."""
     permission_classes = (IsUserLogin,)
 
-    def get(self, request):
-        if validate_token(request) is not None:
-            pk = request.COOKIES.get('user_id')
-            user = User.objects.get(id=pk)
-            serializer = UserSerializer(user)
-            return Response(serializer.data, status=HTTP_200_OK)
-        else:
-            return Response("Your token expire Login again", status=HTTP_400_BAD_REQUEST)
+    @staticmethod
+    @validate_token
+    def get(request):
+        pk = request.COOKIES.get('user_id')
+        user = User.objects.get(id=pk)
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=HTTP_200_OK)
 
-    def put(self, request):
-        if validate_token(request) is not None:
-            pk = request.COOKIES.get('user_id')
-            user = User.objects.get(id=pk)
-            payload = request.data
-            serializer = UserSerializer(user, data=payload, partial=True)
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
+    @staticmethod
+    @validate_token
+    def put(request):
+        pk = request.COOKIES.get('user_id')
+        user = User.objects.get(id=pk)
+        payload = request.data
+        serializer = UserSerializer(user, data=payload, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
             return Response(serializer.data, status=HTTP_200_OK)
         else:
             return Response("UNAUTHORIZED", status=HTTP_401_UNAUTHORIZED)
 
-    def get_serialized(self, pk, user):
-
+    @staticmethod
+    def get_serialized(pk):
         queryset = Contact.objects.filter(user_id=pk)
         serializer = ContactSerializer(queryset, many=True)
         return serializer.data
 
 
 class UserContacts(APIView):
+    """This APIView is for the all contacts of user."""
     permission_classes = (IsUserLogin,)
 
-    def get(self, request):
-        if validate_token(request) is not None:
-            pk = request.COOKIES.get('user_id')
-            _id = int(pk)
-            user = User.objects.get(id=_id)
-            contact = Contact.objects.filter(user_id=user.id)
-            serializer = ContactSerializer(contact, many=True)
-            return Response(serializer.data)
-        else:
-            return Response("UNAUTHORIZED", status=HTTP_401_UNAUTHORIZED)
+    @staticmethod
+    @validate_token
+    def get(request):
+        pk = request.COOKIES.get('user_id')
+        _id = int(pk)
+        user = User.objects.get(id=_id)
+        contact = Contact.objects.filter(user_id=user.id)
+        serializer = ContactSerializer(contact, many=True)
+        return Response(serializer.data)
 
-    def post(self, request):
+    @staticmethod
+    @validate_token
+    def post(request):
         serializer = ContactSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors)
 
-    def put(self, request):
-        if validate_token(request) is not None:
-            contact = Contact.objects.get(id=request.data['id'])
-            payload = request.data
-            serializer = ContactSerializer(contact, data=payload, partial=True)
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
-            return Response(serializer.data, status=HTTP_200_OK)
-        else:
-            return Response("UNAUTHORIZED", status=HTTP_401_UNAUTHORIZED)
-
-
-class ContactDetails(APIView):
-
-    def get(self, request, pk):
-        book = Contact.objects.get(id=pk)
-        serializer = ContactSerializer(book)
-        return Response(serializer.data)
-
-
-class UserDetails(APIView):
-
-
-    def get(self, request, pk):
-        user = User.objects.get(id=pk)
-        self.get_serialized(pk, user)
-        serializer = UserDetailSerializer(user)
-        return Response(serializer.data)
-
-    def get_serialized(self, pk, user):
-        queryset = Contact.objects.filter(user_id=pk)
-        serializer = ContactSerializer(queryset, many=True)
-        return serializer.data
+    @staticmethod
+    @validate_token
+    def put(request):
+        contact = Contact.objects.get(id=request.data['id'])
+        payload = request.data
+        serializer = ContactSerializer(contact, data=payload, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+        return Response(serializer.data, status=HTTP_200_OK)
 
 
 @api_view(["POST"])
 @permission_classes((AllowAny,))
 @csrf_exempt
 def login(request):
+    """This view is for login of user."""
     username = request.POST.get("username")
     password = request.POST.get("password")
     if username is None or password is None:
@@ -139,10 +110,11 @@ def login(request):
 
 
 class Logout(APIView):
+    """This APIView is for the logout of current login user."""
     permission_classes = (IsUserLogin,)
 
     @csrf_exempt
-    def get(self, request, format=None):
+    def get(self, request):
         response = HttpResponse()
         try:
             Token.objects.get(key=request.COOKIES['token']).delete()

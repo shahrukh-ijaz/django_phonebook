@@ -1,20 +1,9 @@
-from tokenize import Token
-
 from rest_framework.permissions import BasePermission
-
-
-def validate_token(request):
-    try:
-        if 'token' in request.COOKIES:
-            token = Token.objects.get(key=request.COOKIES['token'])
-            return token
-        else:
-            return None
-    except Token.DoesNotExist:
-        return None
+from contacts.decorators import validate_token
 
 
 class IsUserLogin(BasePermission):
+    @validate_token
     def has_object_permission(self, request, view, obj):
 
         if validate_token(request) is not None:

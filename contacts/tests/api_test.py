@@ -37,15 +37,12 @@ class ProfileAPIViewTestCase(APITestCase):
 
     def test_get_profile_details(self):
         self.user = User.objects.create_user(username=self.username, password=self.password, email=self.email)
-        response = self.client.post(self.url, {"username": self.username, "password": self.password},
+        self.client.post(self.url, {"username": self.username, "password": self.password},
                                     format='multipart')
-        if response.status_code == 200:
-            response = self.client.get(self.profile)
-            self.assertEqual(200, response.status_code)
-        else:
-            self.assertFalse(200, response.status_code)
+        response = self.client.get(self.profile)
+        self.assertEqual(200, response.status_code)
 
-    def test_put_profile_details(self):
+    def test_update_profile(self):
         self.user = User.objects.create_user(username=self.username, password=self.password, email=self.email)
         response = self.client.post(self.url, {"username": self.username, "password": self.password},
                                     format='multipart')
@@ -69,12 +66,9 @@ class ContactsAPIViewTestCase(APITestCase):
 
     def test_get_contacts(self):
         self.user = User.objects.create_user(username=self.username, password=self.password, email=self.email)
-        response = self.client.post(self.url, {"username": self.username, "password": self.password},
-                                    format='multipart')
-        if response.status_code == 200:
-            response = self.client.get(self.contacts)
-            self.assertEqual(200, response.status_code)
-        else:
-            self.assertFalse(200, response.status_code)
+        self.client.post(self.url, {"username": self.username, "password": self.password}, format='multipart')
+        response = self.client.get(self.contacts)
+        self.assertEqual(200, response.status_code)
+
 
 
