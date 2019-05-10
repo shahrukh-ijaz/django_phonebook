@@ -15,7 +15,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from contacts.decorators import validate_token
-from contacts.serializers import UserSerializer, ContactSerializer
+from contacts.serializers import UserSerializer, ContactSerializer, UserCreateSerializer
 from contacts.models import User, Contact
 from django.contrib.auth import authenticate
 from contacts.permissions import IsUserLogin
@@ -92,8 +92,8 @@ class UserContacts(APIView):
 @csrf_exempt
 def login(request):
     """This view is for login of user."""
-    username = request.POST.get("username")
-    password = request.POST.get("password")
+    username = request.data["username"]
+    password = request.data["password"]
     if username is None or password is None:
         return Response({'error': 'Please provide both username and password'},
                         status=HTTP_400_BAD_REQUEST)
@@ -103,10 +103,7 @@ def login(request):
                         status=HTTP_404_NOT_FOUND)
 
     token, _ = Token.objects.get_or_create(user=user)
-    response = HttpResponse()
-    response.set_cookie('token', token.key)
-    response.set_cookie('user_id', user.id)
-    return response
+    return Response({'token': token.key}, status=HTTP_200_OK)
 
 
 class Logout(APIView):
@@ -123,3 +120,16 @@ class Logout(APIView):
         response.delete_cookie('token')
         response.delete_cookie('user_id')
         return response
+
+
+class Signup(APIView):
+    """This APIView is for the signup of user."""
+    permission_classes = (AllowAny,)
+
+    @csrf_exempt
+    def post(self, request):
+        serializer = UserCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
