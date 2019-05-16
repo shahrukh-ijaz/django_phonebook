@@ -12,6 +12,7 @@ django-cache==0.3
 django-celery==3.2.2
 django-celery-results==1.0.4
 django-class==2019.3.22
+django-cors-headers==2.5.3
 django-datetime-elapsed-field==2019.3.22
 djangorestframework==3.9.2
 docutils==0.14
