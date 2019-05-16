@@ -83,16 +83,16 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True 
-
-# CORS_ORIGIN_WHITELIST = (
-#     'google.com',
-#     'hostname.example.com',
-#     'localhost:8000',
-#     '127.0.0.1:9000',
-#     'localhost:33613',
-#     'localhost:34227'
-# )
+# CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_WHITELIST = (
+    'localhost:3006',
+    'hostname.example.com',
+    'localhost:8000',
+    '127.0.0.1:9000',
+    'localhost:33613',
+    'localhost:34227'
+)
 ROOT_URLCONF = 'phone_book.urls'
 
 TEMPLATES = [

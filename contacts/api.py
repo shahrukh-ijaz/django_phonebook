@@ -26,15 +26,16 @@ class UserProfile(APIView):
     permission_classes = (IsUserLogin,)
 
     @staticmethod
-    @validate_token
+    @csrf_exempt
     def get(request):
-        pk = request.COOKIES.get('user_id')
-        user = User.objects.get(id=pk)
+        token = request.COOKIES.get('token')
+        pk = Token.objects.get(key=str(token))
+        user = User.objects.get(id=int(pk.user_id))
         serializer = UserSerializer(user)
         return Response(serializer.data, status=HTTP_200_OK)
 
     @staticmethod
-    @validate_token
+    @csrf_exempt
     def put(request):
         pk = request.COOKIES.get('user_id')
         user = User.objects.get(id=pk)
@@ -60,20 +61,29 @@ class UserContacts(APIView):
     @staticmethod
     @validate_token
     def get(request):
-        pk = request.COOKIES.get('user_id')
-        _id = int(pk)
-        user = User.objects.get(id=_id)
+        token = request.COOKIES.get('token')
+        _id = Token.objects.get(key=str(token))
+        user = User.objects.get(id=_id.user_id)
         contact = Contact.objects.filter(user_id=user.id)
         serializer = ContactSerializer(contact, many=True)
         return Response(serializer.data)
 
     @staticmethod
-    @validate_token
     def post(request):
-        serializer = ContactSerializer(data=request.data)
+        token = request.COOKIES.get('token')
+        _id = Token.objects.get(key=str(token))
+        data = {
+            "first_name": request.data['first_name'],
+            "last_name": request.data['last_name'],
+            "note": request.data['note'],
+            "dob":  request.data['dob'],
+            "user_id": _id.user_id
+        }
+        serializer = ContactSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print(serializer.errors)
         return Response(serializer.errors)
 
     @staticmethod
