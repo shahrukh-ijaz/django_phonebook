@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 import json
-import djcelery
 
 
 with open('celery_settings.json', 'r') as f:
@@ -54,12 +53,25 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'contacts',
     'djcelery',
+    'corsheaders',
     'django_celery_results',
+    'rest_framework',
+    'rest_framework.authtoken'
 ]
+
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_RESULT_BACKEND = 'django-cache'
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated', )
+}
+
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -69,6 +81,17 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_WHITELIST = (
+    'localhost:3006',
+    'localhost:3007',
+    'hostname.example.com',
+    'localhost:8000',
+    '127.0.0.1:9000',
+    'localhost:33613',
+    'localhost:34227'
+)
 ROOT_URLCONF = 'phone_book.urls'
 
 TEMPLATES = [

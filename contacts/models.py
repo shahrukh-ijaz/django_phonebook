@@ -8,7 +8,7 @@ class Contact(models.Model):
     note = models.TextField(max_length=300, default="")
     dob = models.DateField()
 
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='contacts')
 
     def __str__(self):
         return "%s %s" % (self.first_name, self.last_name)
@@ -16,13 +16,10 @@ class Contact(models.Model):
 
 class Email(models.Model):
     email = models.EmailField(default='example@example.com')
-    contact_id = models.ForeignKey(Contact, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.email
+    contact_id = models.ForeignKey(Contact, on_delete=models.CASCADE, related_name='emails')
 
 
 class Number(models.Model):
     number = models.CharField(max_length=15, default='SOME STRING2' )
-    contact_id = models.ForeignKey(Contact, on_delete=models.CASCADE)
+    contact_id = models.ForeignKey(Contact, on_delete=models.CASCADE, related_name='numbers')
 

@@ -1,5 +1,4 @@
 from django.test import TestCase
-
 from contacts.forms import AddContactForm
 from contacts.models import Contact, Number, Email, User
 
@@ -68,3 +67,4 @@ class NumberTestCase(TestCase):
                                          user_id=user)
         Number.objects.create(number='03209503962', contact_id=contact)
         self.assertEqual('Number Created!', 'Number Created!')
+
