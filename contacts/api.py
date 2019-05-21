@@ -1,5 +1,4 @@
 from tokenize import Token
-from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.authtoken.models import Token
@@ -13,22 +12,19 @@ from rest_framework.status import (
 )
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from contacts.decorators import validate_token
 from contacts.serializers import UserSerializer, ContactSerializer, UserCreateSerializer
 from contacts.models import User, Contact
 from django.contrib.auth import authenticate
-from contacts.permissions import IsUserLogin
 
 
 class UserProfile(APIView):
     """This APIView os for the content of UserProfile."""
-    permission_classes = (IsUserLogin,)
 
     @staticmethod
     @csrf_exempt
     def get(request):
-        token = request.COOKIES.get('token')
+        token = request.META.get('HTTP_AUTHORIZATION')
+        token = token.split(" ")[1]
         pk = Token.objects.get(key=str(token))
         user = User.objects.get(id=int(pk.user_id))
         serializer = UserSerializer(user)
@@ -56,21 +52,21 @@ class UserProfile(APIView):
 
 class UserContacts(APIView):
     """This APIView is for the all contacts of user."""
-    permission_classes = (IsUserLogin,)
 
     @staticmethod
-    @validate_token
     def get(request):
-        token = request.COOKIES.get('token')
-        _id = Token.objects.get(key=str(token))
-        user = User.objects.get(id=_id.user_id)
+        token = request.META.get('HTTP_AUTHORIZATION')
+        token = token.split(" ")[1]
+        pk = Token.objects.get(key=str(token))
+        user = User.objects.get(id=pk.user_id)
         contact = Contact.objects.filter(user_id=user.id)
         serializer = ContactSerializer(contact, many=True)
         return Response(serializer.data)
 
     @staticmethod
     def post(request):
-        token = request.COOKIES.get('token')
+        token = request.META.get('HTTP_AUTHORIZATION')
+        token = token.split(" ")[1]
         _id = Token.objects.get(key=str(token))
         data = {
             "first_name": request.data['first_name'],
@@ -87,7 +83,6 @@ class UserContacts(APIView):
         return Response(serializer.errors)
 
     @staticmethod
-    @validate_token
     def put(request):
         contact = Contact.objects.get(id=request.data['id'])
         payload = request.data
@@ -109,6 +104,7 @@ def login(request):
                         status=HTTP_400_BAD_REQUEST)
     user = authenticate(username=username, password=password)
     if not user:
+
         return Response({'error': 'Invalid Credentials'},
                         status=HTTP_404_NOT_FOUND)
 
@@ -118,18 +114,16 @@ def login(request):
 
 class Logout(APIView):
     """This APIView is for the logout of current login user."""
-    permission_classes = (IsUserLogin,)
 
     @csrf_exempt
     def get(self, request):
-        response = HttpResponse()
         try:
-            Token.objects.get(key=request.COOKIES['token']).delete()
+            token = request.META.get('HTTP_AUTHORIZATION')
+            token = token.split(" ")[1]
+            Token.objects.get(key=str(token)).delete()
+            return Response({"message": "logout"}, status=HTTP_200_OK)
         except Token.DoesNotExist:
-            return Response("UNAUTHORIZED", status=HTTP_401_UNAUTHORIZED)
-        response.delete_cookie('token')
-        response.delete_cookie('user_id')
-        return response
+            return Response({"message": "UNAUTHORIZED"}, status=HTTP_401_UNAUTHORIZED)
 
 
 class Signup(APIView):
@@ -143,3 +137,4 @@ class Signup(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

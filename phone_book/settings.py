@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 import json
-import djcelery
 
 
 with open('celery_settings.json', 'r') as f:
@@ -65,9 +64,8 @@ CELERY_RESULT_BACKEND = 'django-cache'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-            'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ),
-    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated', )
 }
@@ -87,6 +85,7 @@ MIDDLEWARE = [
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = (
     'localhost:3006',
+    'localhost:3007',
     'hostname.example.com',
     'localhost:8000',
     '127.0.0.1:9000',
